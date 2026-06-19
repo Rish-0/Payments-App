@@ -1,0 +1,616 @@
+/* ============================================================
+   agents.css — Agent Panel Styles, Risk Gauge, Status Badges
+   ============================================================ */
+
+/* ── Agent Output Cards ── */
+.agent-card {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-base);
+}
+
+.agent-card.payment {
+    border: 1px solid var(--color-payment-border);
+    background: linear-gradient(135deg, var(--color-payment-bg), transparent);
+}
+
+.agent-card.fraud {
+    border: 1px solid var(--color-fraud-border);
+    background: linear-gradient(135deg, var(--color-fraud-bg), transparent);
+}
+
+.agent-card.support {
+    border: 1px solid var(--color-support-border);
+    background: linear-gradient(135deg, var(--color-support-bg), transparent);
+}
+
+.agent-card.final {
+    border: 1px solid var(--border-default);
+    background: var(--bg-card);
+}
+
+.agent-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.agent-card-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-base);
+    font-weight: 600;
+}
+
+.agent-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-md);
+}
+
+.agent-card-icon.payment-icon {
+    background: var(--color-payment-bg);
+    border: 1px solid var(--color-payment-border);
+}
+
+.agent-card-icon.fraud-icon {
+    background: var(--color-fraud-bg);
+    border: 1px solid var(--color-fraud-border);
+}
+
+.agent-card-icon.support-icon {
+    background: var(--color-support-bg);
+    border: 1px solid var(--color-support-border);
+}
+
+.agent-card-icon.final-icon {
+    background: var(--color-info-bg);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.agent-card-status {
+    font-size: var(--text-xs);
+    font-weight: 600;
+}
+
+.agent-card-body {
+    padding: var(--space-5);
+}
+
+/* ── Risk Gauge ── */
+.risk-gauge-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+}
+
+.risk-gauge {
+    position: relative;
+    width: 140px;
+    height: 140px;
+}
+
+.risk-gauge svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.risk-gauge-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 8;
+}
+
+.risk-gauge-fill {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+                stroke 0.5s ease;
+}
+
+.risk-gauge-fill.low { stroke: var(--color-success); }
+.risk-gauge-fill.medium { stroke: var(--color-warning); }
+.risk-gauge-fill.high { stroke: var(--color-fraud); }
+.risk-gauge-fill.critical { stroke: var(--color-error); }
+
+.risk-gauge-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.risk-gauge-value {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    line-height: 1;
+}
+
+.risk-gauge-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ── Risk Details ── */
+.risk-details {
+    padding: var(--space-4);
+}
+
+.risk-factor {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.risk-factor:last-child {
+    border-bottom: none;
+}
+
+.risk-factor-weight {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    min-width: 32px;
+    text-align: center;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.risk-factor-weight.positive {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+.risk-factor-weight.zero {
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--text-tertiary);
+}
+
+.risk-factor-text {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.risk-factor-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* ── Decision Badge ── */
+.decision-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.decision-badge.approve {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+    border: 1px solid rgba(46, 213, 115, 0.25);
+}
+
+.decision-badge.otp {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+    border: 1px solid rgba(255, 165, 2, 0.25);
+}
+
+.decision-badge.review {
+    background: var(--color-info-bg);
+    color: var(--color-info);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.decision-badge.block {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+    border: 1px solid rgba(255, 71, 87, 0.25);
+}
+
+/* ── Compliance Status ── */
+.compliance-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-3);
+}
+
+.compliance-icon {
+    font-size: var(--text-md);
+}
+
+.compliance-text {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.compliance-status-label {
+    font-weight: 600;
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ── Agent Cards Grid ── */
+.agent-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.agent-cards-grid .agent-card.full-width {
+    grid-column: 1 / -1;
+}
+
+/* ── Summary Stats Row (inside agent cards) ── */
+.agent-stats-row {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.agent-stat {
+    flex: 1;
+    text-align: center;
+    padding: var(--space-3);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.agent-stat-value {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+}
+
+.agent-stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin-top: 2px;
+}
+
+/* ── Agent Processing State ── */
+.agent-processing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+    color: var(--text-tertiary);
+}
+
+.agent-processing-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border-subtle);
+    border-top-color: var(--color-payment);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--space-3);
+}
+
+.agent-processing-text {
+    font-size: var(--text-sm);
+    animation: pulse-text 1.5s infinite;
+}
+
+/* ── Empty / Idle State ── */
+.agent-idle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-10) var(--space-4);
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.agent-idle-icon {
+    font-size: var(--text-4xl);
+    margin-bottom: var(--space-3);
+    opacity: 0.4;
+}
+
+.agent-idle-text {
+    font-size: var(--text-sm);
+    max-width: 250px;
+    line-height: 1.5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+    .agent-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Chat Interface ── */
+.chat-panel {
+    position: fixed;
+    top: 0;
+    right: -460px;
+    width: 460px;
+    height: 100vh;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-default);
+    z-index: var(--z-modal);
+    display: flex;
+    flex-direction: column;
+    transition: right var(--transition-slow);
+    box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.chat-panel.open {
+    right: 0;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-default);
+    background: rgba(0, 230, 118, 0.03);
+}
+
+.chat-header-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-base);
+    font-weight: 600;
+}
+
+.chat-header-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    background: var(--color-support-bg);
+    border: 1px solid var(--color-support-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-md);
+}
+
+.chat-close {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-md);
+    transition: all var(--transition-fast);
+}
+
+.chat-close:hover {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+    border-color: rgba(255, 71, 87, 0.25);
+}
+
+/* Chat Messages */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.chat-message {
+    max-width: 85%;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    animation: fadeSlideUp 0.3s ease;
+}
+
+.chat-message.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 212, 255, 0.05));
+    border: 1px solid var(--color-payment-border);
+    color: var(--text-primary);
+}
+
+.chat-message.agent {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+}
+
+.chat-message.agent .chat-msg-json {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    padding: var(--space-3);
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: var(--radius-md);
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+.chat-message .chat-msg-sender {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-1);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.chat-typing {
+    align-self: flex-start;
+    display: flex;
+    gap: 4px;
+    padding: var(--space-3) var(--space-4);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+}
+
+.chat-typing-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+    animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.chat-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.chat-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Chat Input */
+.chat-input-area {
+    padding: var(--space-4);
+    border-top: 1px solid var(--border-default);
+}
+
+.chat-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.chat-quick-btn {
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-family: var(--font-sans);
+}
+
+.chat-quick-btn:hover {
+    background: var(--color-support-bg);
+    border-color: var(--color-support-border);
+    color: var(--color-support);
+}
+
+.chat-input-row {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.chat-input {
+    flex: 1;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    outline: none;
+    transition: all var(--transition-base);
+}
+
+.chat-input:focus {
+    border-color: var(--color-support);
+    box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1);
+}
+
+.chat-send {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--color-support), #00b35e);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-md);
+    transition: all var(--transition-base);
+}
+
+.chat-send:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-glow-green);
+}
+
+/* Chat Overlay */
+.chat-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: calc(var(--z-modal) - 1);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+}
+
+.chat-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ── User Select in Chat ── */
+.chat-user-select {
+    padding: var(--space-3) var(--space-5);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.chat-user-select select {
+    flex: 1;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    border-radius: var(--radius-sm);
+}
+
+@media (max-width: 768px) {
+    .chat-panel {
+        width: 100%;
+        right: -100%;
+    }
+}
