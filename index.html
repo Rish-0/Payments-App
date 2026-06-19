@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PayGuard AI — Multi-Agent Digital Payments Platform</title>
+    <meta name="description" content="Multi-agent AI-powered digital payments platform with real-time fraud detection, payment processing, and customer support." />
+    <meta name="theme-color" content="#06090f" />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/agents.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+
+    <!-- Favicon (inline SVG) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+</head>
+<body>
+    <div class="app" id="app">
+
+        <!-- ═══════════ TOP BAR ═══════════ -->
+        <header class="topbar" id="topbar">
+            <div class="topbar-brand">
+                <div class="topbar-logo">⚡</div>
+                <div>
+                    <div class="topbar-title">PayGuard AI</div>
+                    <div class="topbar-subtitle">Multi-Agent Payment Intelligence</div>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <div class="topbar-status">
+                    <span class="status-dot"></span>
+                    <span>All Agents Online</span>
+                </div>
+                <button class="btn btn-success btn-sm" id="chat-toggle" title="Open Support Chat">
+                    💬 Support
+                </button>
+            </div>
+        </header>
+
+        <!-- ═══════════ MAIN CONTENT ═══════════ -->
+        <main class="main-content" id="main-content">
+
+            <!-- Stats Row -->
+            <div class="stats-row" id="stats-row">
+                <!-- Rendered by dashboard.js -->
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="dashboard-grid">
+
+                <!-- LEFT: Transaction Form -->
+                <div class="glass-card" id="transaction-form" style="padding: var(--space-5); align-self: start;">
+                    <!-- Rendered by transactionForm.js -->
+                </div>
+
+                <!-- RIGHT: Agent Pipeline -->
+                <div class="pipeline-area">
+
+                    <!-- Pipeline Step Indicator -->
+                    <div class="glass-card">
+                        <div style="padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--border-subtle);">
+                            <h3 class="section-title" style="font-size: var(--text-sm);">
+                                <span class="section-title-icon cyan"></span>
+                                Agent Pipeline
+                            </h3>
+                        </div>
+                        <div id="pipeline-steps" class="pipeline-steps">
+                            <!-- Rendered by agentPanels.js -->
+                        </div>
+                    </div>
+
+                    <!-- Agent Output Panels -->
+                    <div id="agent-panels">
+                        <!-- Rendered by agentPanels.js -->
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Bottom Section: Transaction Feed -->
+            <div class="bottom-section" style="grid-template-columns: 1fr;">
+                <div class="glass-card">
+                    <div style="padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border-subtle);">
+                        <div class="section-header" style="margin-bottom: 0;">
+                            <h3 class="section-title" style="font-size: var(--text-sm);">
+                                <span class="section-title-icon amber"></span>
+                                Transaction History
+                            </h3>
+                            <span class="badge badge-neutral" id="txn-count-badge">0 transactions</span>
+                        </div>
+                    </div>
+                    <div class="transaction-feed" id="transaction-feed">
+                        <!-- Rendered by dashboard.js -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ═══════════ CHAT PANEL (Customer Support) ═══════════ -->
+        <div class="chat-overlay" id="chat-overlay"></div>
+        <aside class="chat-panel" id="chat-panel">
+            <div class="chat-header">
+                <div class="chat-header-title">
+                    <div class="chat-header-icon">🤖</div>
+                    <div>
+                        <div>Customer Support</div>
+                        <div style="font-size: var(--text-xs); color: var(--text-tertiary); font-weight: 400;">Dispute Resolution Agent</div>
+                    </div>
+                </div>
+                <button class="chat-close" id="chat-close" title="Close chat">✕</button>
+            </div>
+
+            <div class="chat-user-select">
+                <span>Acting as:</span>
+                <select id="chat-user-select">
+                    <option value="USR-001">Aarav Sharma (USR-001)</option>
+                    <option value="USR-002">Priya Patel (USR-002)</option>
+                    <option value="USR-003">Vikram Reddy (USR-003)</option>
+                    <option value="USR-004">Sneha Gupta (USR-004)</option>
+                    <option value="USR-005">Rohan Mehta (USR-005)</option>
+                    <option value="USR-006">Ananya Iyer (USR-006)</option>
+                </select>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages rendered by chatInterface.js -->
+            </div>
+
+            <div class="chat-input-area">
+                <div class="chat-quick-actions" id="chat-quick-actions">
+                    <button class="chat-quick-btn" data-action="Check my transaction status">📋 Check Status</button>
+                    <button class="chat-quick-btn" data-action="I want a refund for my last transaction">💰 Request Refund</button>
+                    <button class="chat-quick-btn" data-action="I see an unauthorized transaction on my account">🚨 Report Fraud</button>
+                    <button class="chat-quick-btn" data-action="My payment failed and money was deducted">❌ Payment Failed</button>
+                    <button class="chat-quick-btn" data-action="My account is blocked, please help">🔒 Account Issue</button>
+                    <button class="chat-quick-btn" data-action="I want to escalate my complaint to a manager">📢 Escalate</button>
+                </div>
+                <div class="chat-input-row">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Describe your issue..." />
+                    <button class="chat-send" id="chat-send-btn" title="Send">➤</button>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- App Script (ES Modules) -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
