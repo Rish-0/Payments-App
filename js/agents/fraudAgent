@@ -1,0 +1,201 @@
+// ============================================================
+// fraudAgent.js — Fraud & Compliance Agent
+// ============================================================
+
+import { SUSPICIOUS_IPS, HIGH_RISK_CATEGORIES, USERS } from '../data/mockData.js';
+import { clamp } from '../utils/helpers.js';
+
+export class FraudComplianceAgent {
+    constructor() {
+        this.name = 'Fraud & Compliance';
+    }
+
+    /**
+     * Evaluate a transaction for fraud risk and compliance.
+     * @param {object} transaction - The enriched transaction from PaymentAgent
+     * @returns {object} Risk assessment JSON
+     */
+    async evaluateTransaction(transaction) {
+        const factors = [];
+        let riskScore = 0;
+
+        // ──────────────────────────────────────────
+        // 1. Amount Analysis
+        // ──────────────────────────────────────────
+        const amount = transaction.amount;
+        if (amount > 500000) {
+            riskScore += 30;
+            factors.push({ factor: 'Very high transaction amount', weight: 30, detail: `₹${amount.toLocaleString()} exceeds ₹5,00,000 threshold` });
+        } else if (amount > 100000) {
+            riskScore += 20;
+            factors.push({ factor: 'High transaction amount', weight: 20, detail: `₹${amount.toLocaleString()} exceeds ₹1,00,000 threshold` });
+        } else if (amount > 50000) {
+            riskScore += 10;
+            factors.push({ factor: 'Elevated transaction amount', weight: 10, detail: `₹${amount.toLocaleString()} above ₹50,000` });
+        } else {
+            factors.push({ factor: 'Normal transaction amount', weight: 0, detail: `₹${amount.toLocaleString()} within normal range` });
+        }
+
+        // ──────────────────────────────────────────
+        // 2. User Behavior Analysis
+        // ──────────────────────────────────────────
+        const user = USERS[transaction.userId];
+        if (user) {
+            // Failed login attempts
+            if (user.failedAttempts >= 5) {
+                riskScore += 25;
+                factors.push({ factor: 'Multiple failed login attempts', weight: 25, detail: `${user.failedAttempts} failed attempts detected` });
+            } else if (user.failedAttempts >= 3) {
+                riskScore += 12;
+                factors.push({ factor: 'Elevated failed login attempts', weight: 12, detail: `${user.failedAttempts} failed attempts` });
+            }
+
+            // Transaction velocity
+            if (user.recentTransactions > 20) {
+                riskScore += 20;
+                factors.push({ factor: 'High transaction velocity', weight: 20, detail: `${user.recentTransactions} recent transactions — possible velocity attack` });
+            } else if (user.recentTransactions > 10) {
+                riskScore += 8;
+                factors.push({ factor: 'Elevated transaction frequency', weight: 8, detail: `${user.recentTransactions} recent transactions` });
+            }
+
+            // Account age (newer accounts are riskier)
+            const accountAgeDays = Math.floor((Date.now() - new Date(user.joinDate).getTime()) / 86400000);
+            if (accountAgeDays < 30) {
+                riskScore += 15;
+                factors.push({ factor: 'New account', weight: 15, detail: `Account is only ${accountAgeDays} days old` });
+            } else if (accountAgeDays < 90) {
+                riskScore += 5;
+                factors.push({ factor: 'Recently created account', weight: 5, detail: `Account is ${accountAgeDays} days old` });
+            }
+
+            // Last login recency
+            const lastLoginDays = Math.floor((Date.now() - new Date(user.lastLogin).getTime()) / 86400000);
+            if (lastLoginDays > 60) {
+                riskScore += 15;
+                factors.push({ factor: 'Dormant account reactivation', weight: 15, detail: `Last login was ${lastLoginDays} days ago — possible account takeover` });
+            }
+        }
+
+        // ──────────────────────────────────────────
+        // 3. Device & IP Analysis
+        // ──────────────────────────────────────────
+        const ip = transaction.userIp || '';
+        const isSuspiciousIP = SUSPICIOUS_IPS.some(prefix => ip.startsWith(prefix));
+        if (isSuspiciousIP) {
+            riskScore += 20;
+            factors.push({ factor: 'Suspicious IP address', weight: 20, detail: `IP ${ip} matches known VPN/TOR/datacenter ranges` });
+        }
+
+        // ──────────────────────────────────────────
+        // 4. Geolocation Analysis
+        // ──────────────────────────────────────────
+        const location = transaction.userLocation;
+        if (location && location.country !== 'IN') {
+            riskScore += 18;
+            factors.push({ factor: 'Foreign location detected', weight: 18, detail: `Transaction from ${location.city}, ${location.country} — account registered in India` });
+        }
+
+        // ──────────────────────────────────────────
+        // 5. Merchant / Recipient Risk
+        // ──────────────────────────────────────────
+        const recipientCategory = transaction.recipientCategory || 'INDIVIDUAL';
+        const recipientRisk = transaction.recipientRiskLevel || 'LOW';
+
+        if (HIGH_RISK_CATEGORIES.includes(recipientCategory)) {
+            riskScore += 22;
+            factors.push({ factor: 'High-risk merchant category', weight: 22, detail: `Category: ${recipientCategory}` });
+        }
+        if (recipientRisk === 'CRITICAL') {
+            riskScore += 30;
+            factors.push({ factor: 'Critical-risk recipient', weight: 30, detail: 'Recipient flagged as critical risk' });
+        } else if (recipientRisk === 'HIGH') {
+            riskScore += 15;
+            factors.push({ factor: 'High-risk recipient', weight: 15, detail: 'Recipient has elevated risk profile' });
+        }
+
+        // ──────────────────────────────────────────
+        // 6. KYC & Compliance Checks
+        // ──────────────────────────────────────────
+        let complianceStatus = 'COMPLIANT';
+        const complianceIssues = [];
+
+        if (!transaction.userKycStatus) {
+            riskScore += 15;
+            complianceStatus = 'KYC_PENDING';
+            complianceIssues.push('KYC verification incomplete');
+            factors.push({ factor: 'KYC not verified', weight: 15, detail: 'User has not completed KYC verification' });
+        }
+
+        // AML check — large cash-like transactions
+        if (amount > 200000) {
+            complianceIssues.push('AML reporting threshold exceeded (>₹2,00,000)');
+            if (complianceStatus === 'COMPLIANT') complianceStatus = 'AML_FLAGGED';
+            factors.push({ factor: 'AML threshold exceeded', weight: 0, detail: 'Transaction exceeds ₹2,00,000 — automatic AML reporting triggered' });
+        }
+
+        // Cross-border check
+        if (location && location.country !== 'IN') {
+            complianceIssues.push('Cross-border transaction requires additional verification');
+            if (complianceStatus === 'COMPLIANT') complianceStatus = 'CROSS_BORDER_CHECK';
+        }
+
+        if (complianceIssues.length === 0) {
+            complianceIssues.push('All compliance checks passed');
+        }
+
+        // ──────────────────────────────────────────
+        // 7. Calculate Final Scores
+        // ──────────────────────────────────────────
+        riskScore = clamp(riskScore, 0, 100);
+        const fraudProbability = clamp(Math.round(riskScore * 0.85 + Math.random() * 5), 0, 99);
+        const confidenceScore = clamp(85 + Math.floor(Math.random() * 10), 80, 98);
+
+        // Risk classification
+        let riskLevel, decision;
+        if (riskScore <= 25) {
+            riskLevel = 'LOW_RISK';
+            decision = 'APPROVE';
+        } else if (riskScore <= 50) {
+            riskLevel = 'MEDIUM_RISK';
+            decision = 'REQUIRE_OTP';
+        } else if (riskScore <= 75) {
+            riskLevel = 'HIGH_RISK';
+            decision = 'REQUIRE_MANUAL_REVIEW';
+        } else {
+            riskLevel = 'CRITICAL_RISK';
+            decision = 'BLOCK';
+        }
+
+        // Critical risk override — never auto-approve
+        if (riskLevel === 'CRITICAL_RISK' && decision !== 'BLOCK') {
+            decision = 'BLOCK';
+        }
+
+        // Build reasoning
+        const reasoning = factors
+            .filter(f => f.weight > 0)
+            .sort((a, b) => b.weight - a.weight)
+            .map(f => `${f.factor}: ${f.detail} (+${f.weight})`);
+
+        if (reasoning.length === 0) {
+            reasoning.push('No significant risk factors detected. Transaction appears routine.');
+        }
+
+        return {
+            agent: 'Fraud & Compliance',
+            transaction_id: transaction.transaction_id,
+            risk_score: riskScore,
+            fraud_probability: fraudProbability,
+            confidence_score: confidenceScore,
+            risk_level: riskLevel,
+            decision: decision,
+            reasoning: reasoning,
+            compliance_status: complianceStatus,
+            compliance_details: complianceIssues,
+            factors: factors,
+            _riskLevel: riskLevel,
+            _decision: decision
+        };
+    }
+}
