@@ -1,0 +1,298 @@
+// ============================================================
+// agentPanels.js — Agent Output Panels & Risk Gauge
+// ============================================================
+
+import { highlightJSON } from '../utils/helpers.js';
+
+/**
+ * Render the pipeline step indicator.
+ */
+export function renderPipelineSteps(activeStep = 0, completed = []) {
+    const el = document.getElementById('pipeline-steps');
+    if (!el) return;
+
+    const steps = [
+        { num: 1, label: 'Payment Validation', agent: 'payment' },
+        { num: 2, label: 'Fraud Analysis', agent: 'fraud' },
+        { num: 3, label: 'Decision Engine', agent: 'decision' },
+        { num: 4, label: 'Final Result', agent: 'result' }
+    ];
+
+    el.innerHTML = steps.map((step, i) => {
+        const isActive = activeStep === step.num;
+        const isCompleted = completed.includes(step.num);
+        const cls = isActive ? 'active' : isCompleted ? 'completed' : '';
+        const arrow = i < steps.length - 1
+            ? `<span class="pipeline-arrow ${isCompleted || isActive ? 'active' : ''}">→</span>`
+            : '';
+        return `
+            <div class="pipeline-step ${cls}" data-agent="${step.agent}">
+                <span>${isCompleted ? '✓' : step.num}</span>
+                ${step.label}
+            </div>
+            ${arrow}
+        `;
+    }).join('');
+}
+
+/**
+ * Render the agent output panels area.
+ */
+export function renderAgentPanels(paymentResult, fraudResult, finalResult) {
+    const container = document.getElementById('agent-panels');
+    if (!container) return;
+
+    // If nothing to show
+    if (!paymentResult && !fraudResult && !finalResult) {
+        container.innerHTML = `
+            <div class="agent-idle">
+                <div class="agent-idle-icon">🔮</div>
+                <div class="agent-idle-text">
+                    Submit a transaction or select a scenario to see the multi-agent pipeline in action.
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '<div class="agent-cards-grid">';
+
+    // Payment Agent Card
+    if (paymentResult) {
+        html += renderPaymentCard(paymentResult);
+    }
+
+    // Fraud Agent Card
+    if (fraudResult) {
+        html += renderFraudCard(fraudResult);
+    }
+
+    // Final Decision Card
+    if (finalResult) {
+        html += renderFinalCard(finalResult);
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function renderPaymentCard(result) {
+    const isError = result._error;
+    const statusBadge = isError
+        ? `<span class="badge badge-error">${result.status}</span>`
+        : `<span class="badge badge-info">${result.status}</span>`;
+
+    // Clean output for display (remove internal fields)
+    const displayResult = { ...result };
+    delete displayResult._transaction;
+    delete displayResult._error;
+    delete displayResult.sender;
+    delete displayResult.recipient;
+
+    return `
+        <div class="agent-card payment animate-scale-in">
+            <div class="agent-card-header">
+                <div class="agent-card-title">
+                    <div class="agent-card-icon payment-icon">💳</div>
+                    Payment Processing Agent
+                </div>
+                ${statusBadge}
+            </div>
+            <div class="agent-card-body">
+                ${result.sender ? `
+                    <div class="agent-stats-row">
+                        <div class="agent-stat">
+                            <div class="agent-stat-value" style="font-size: var(--text-base);">${result.sender.name}</div>
+                            <div class="agent-stat-label">Sender</div>
+                        </div>
+                        <div class="agent-stat">
+                            <div class="agent-stat-value" style="font-size: var(--text-base);">${result.recipient.name}</div>
+                            <div class="agent-stat-label">Recipient</div>
+                        </div>
+                    </div>
+                ` : ''}
+                <div class="json-output">${highlightJSON(displayResult)}</div>
+            </div>
+        </div>
+    `;
+}
+
+function renderFraudCard(result) {
+    const riskClass = result.risk_score <= 25 ? 'low'
+        : result.risk_score <= 50 ? 'medium'
+        : result.risk_score <= 75 ? 'high'
+        : 'critical';
+
+    const decisionClass = {
+        'APPROVE': 'approve',
+        'APPROVE_WITH_MONITORING': 'approve',
+        'REQUIRE_OTP': 'otp',
+        'REQUIRE_MANUAL_REVIEW': 'review',
+        'BLOCK': 'block'
+    }[result.decision] || 'review';
+
+    const decisionLabel = {
+        'APPROVE': '✓ Approved',
+        'APPROVE_WITH_MONITORING': '👁 Approved (Monitored)',
+        'REQUIRE_OTP': '🔑 OTP Required',
+        'REQUIRE_MANUAL_REVIEW': '🔍 Manual Review',
+        'BLOCK': '🚫 Blocked'
+    }[result.decision] || result.decision;
+
+    // Calculate gauge circumference
+    const radius = 54;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (result.risk_score / 100) * circumference;
+
+    // Risk factors
+    const factors = result.factors || [];
+
+    // Display JSON (clean)
+    const displayResult = {
+        agent: result.agent,
+        risk_score: result.risk_score,
+        fraud_probability: result.fraud_probability,
+        risk_level: result.risk_level,
+        decision: result.decision,
+        reasoning: result.reasoning,
+        compliance_status: result.compliance_status
+    };
+
+    return `
+        <div class="agent-card fraud animate-scale-in">
+            <div class="agent-card-header">
+                <div class="agent-card-title">
+                    <div class="agent-card-icon fraud-icon">🛡</div>
+                    Fraud & Compliance Agent
+                </div>
+                <span class="decision-badge ${decisionClass}">${decisionLabel}</span>
+            </div>
+            <div class="agent-card-body">
+                <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+                    <!-- Risk Gauge -->
+                    <div class="risk-gauge-container">
+                        <div class="risk-gauge">
+                            <svg viewBox="0 0 120 120">
+                                <circle class="risk-gauge-bg" cx="60" cy="60" r="${radius}" />
+                                <circle class="risk-gauge-fill ${riskClass}" cx="60" cy="60" r="${radius}"
+                                    stroke-dasharray="${circumference}"
+                                    stroke-dashoffset="${offset}" />
+                            </svg>
+                            <div class="risk-gauge-center">
+                                <div class="risk-gauge-value">${result.risk_score}</div>
+                                <div class="risk-gauge-label">Risk Score</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div style="flex:1;">
+                        <div class="agent-stats-row" style="margin-bottom: var(--space-3);">
+                            <div class="agent-stat">
+                                <div class="agent-stat-value">${result.fraud_probability}%</div>
+                                <div class="agent-stat-label">Fraud Prob.</div>
+                            </div>
+                            <div class="agent-stat">
+                                <div class="agent-stat-value">${result.confidence_score}%</div>
+                                <div class="agent-stat-label">Confidence</div>
+                            </div>
+                        </div>
+                        <div class="badge ${riskClass === 'low' ? 'badge-success' : riskClass === 'medium' ? 'badge-warning' : riskClass === 'high' ? 'badge-error' : 'badge-critical'}" style="margin-bottom: var(--space-3);">
+                            ${result.risk_level}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Factors -->
+                ${factors.length > 0 ? `
+                    <div class="risk-details" style="margin-top: var(--space-3);">
+                        <div style="font-size: var(--text-xs); font-weight: 600; color: var(--text-tertiary); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.05em;">Risk Factors</div>
+                        ${factors.map(f => `
+                            <div class="risk-factor">
+                                <span class="risk-factor-weight ${f.weight > 0 ? 'positive' : 'zero'}">+${f.weight}</span>
+                                <div class="risk-factor-text">
+                                    <span class="risk-factor-name">${f.factor}</span><br/>
+                                    <span style="font-size: var(--text-xs); color: var(--text-tertiary);">${f.detail}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                <!-- Compliance -->
+                ${result.compliance_details ? `
+                    <div class="compliance-row">
+                        <span class="compliance-icon">${result.compliance_status === 'COMPLIANT' ? '✅' : '⚠️'}</span>
+                        <div>
+                            <div class="compliance-status-label" style="color: ${result.compliance_status === 'COMPLIANT' ? 'var(--color-success)' : 'var(--color-warning)'};">${result.compliance_status}</div>
+                            <div class="compliance-text">${result.compliance_details.join(' · ')}</div>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <details style="margin-top: var(--space-4);">
+                    <summary style="cursor:pointer; font-size: var(--text-xs); color: var(--text-tertiary); user-select: none;">View Raw JSON Output</summary>
+                    <div class="json-output" style="margin-top: var(--space-2);">${highlightJSON(displayResult)}</div>
+                </details>
+            </div>
+        </div>
+    `;
+}
+
+function renderFinalCard(result) {
+    const statusConfig = {
+        'APPROVED': { cls: 'approve', icon: '✅', color: 'var(--color-success)' },
+        'OTP_REQUIRED': { cls: 'otp', icon: '🔑', color: 'var(--color-warning)' },
+        'MANUAL_REVIEW': { cls: 'review', icon: '🔍', color: 'var(--color-info)' },
+        'BLOCKED': { cls: 'block', icon: '🚫', color: 'var(--color-error)' },
+    };
+    const cfg = statusConfig[result.status] || statusConfig['BLOCKED'];
+
+    return `
+        <div class="agent-card final full-width animate-scale-in">
+            <div class="agent-card-header">
+                <div class="agent-card-title">
+                    <div class="agent-card-icon final-icon">⚡</div>
+                    Final Decision
+                </div>
+                <span class="decision-badge ${cfg.cls}">${cfg.icon} ${result.status}</span>
+            </div>
+            <div class="agent-card-body">
+                <div style="text-align:center; padding: var(--space-4);">
+                    <div style="font-size: var(--text-4xl); margin-bottom: var(--space-3);">${cfg.icon}</div>
+                    <h3 style="color: ${cfg.color}; margin-bottom: var(--space-2);">${result.status.replace(/_/g, ' ')}</h3>
+                    <p style="max-width: 500px; margin: 0 auto; color: var(--text-secondary); font-size: var(--text-sm);">${result.message}</p>
+                    <p style="margin-top: var(--space-3); font-size: var(--text-xs); color: var(--text-tertiary);">
+                        Transaction ID: <code style="color: var(--color-payment);">${result.transaction_id}</code>
+                        &nbsp;·&nbsp;Next: ${result.next_step}
+                    </p>
+                </div>
+                <details style="margin-top: var(--space-2);">
+                    <summary style="cursor:pointer; font-size: var(--text-xs); color: var(--text-tertiary); user-select: none;">View Raw JSON Output</summary>
+                    <div class="json-output" style="margin-top: var(--space-2);">${highlightJSON(result)}</div>
+                </details>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Show processing state in agent panels.
+ */
+export function showProcessingState(agentName) {
+    const container = document.getElementById('agent-panels');
+    if (!container) return;
+
+    const colors = {
+        'Payment Processing': 'var(--color-payment)',
+        'Fraud & Compliance': 'var(--color-fraud)',
+        'Decision Engine': 'var(--color-info)'
+    };
+
+    container.innerHTML = `
+        <div class="agent-processing">
+            <div class="agent-processing-spinner" style="border-top-color: ${colors[agentName] || 'var(--color-payment)'}"></div>
+            <div class="agent-processing-text">${agentName} is processing...</div>
+        </div>
+    `;
+}
