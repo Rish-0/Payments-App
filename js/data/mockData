@@ -1,0 +1,352 @@
+// ============================================================
+// mockData.js — Mock Users, Merchants, Devices & History
+// ============================================================
+
+/**
+ * Mock Users with realistic profiles.
+ */
+export const USERS = {
+    'USR-001': {
+        id: 'USR-001',
+        name: 'Aarav Sharma',
+        email: 'aarav.sharma@email.com',
+        phone: '+91-98765-43210',
+        authenticated: true,
+        accountStatus: 'ACTIVE',
+        kycVerified: true,
+        walletBalance: 45000,
+        bankBalance: 250000,
+        creditLimit: 100000,
+        creditUsed: 15000,
+        dailyLimit: 200000,
+        dailySpent: 12000,
+        monthlyLimit: 1000000,
+        monthlySpent: 85000,
+        riskProfile: 'LOW',
+        joinDate: '2023-03-15',
+        lastLogin: new Date().toISOString(),
+        device: {
+            fingerprint: 'FP-A1B2C3D4E5',
+            type: 'Mobile',
+            os: 'Android 14',
+            browser: 'Chrome Mobile 120'
+        },
+        ip: '103.21.58.193',
+        location: { city: 'Mumbai', state: 'Maharashtra', country: 'IN', lat: 19.076, lng: 72.877 },
+        failedAttempts: 0,
+        recentTransactions: 12
+    },
+    'USR-002': {
+        id: 'USR-002',
+        name: 'Priya Patel',
+        email: 'priya.patel@email.com',
+        phone: '+91-87654-32109',
+        authenticated: true,
+        accountStatus: 'ACTIVE',
+        kycVerified: true,
+        walletBalance: 8500,
+        bankBalance: 120000,
+        creditLimit: 50000,
+        creditUsed: 42000,
+        dailyLimit: 200000,
+        dailySpent: 0,
+        monthlyLimit: 1000000,
+        monthlySpent: 210000,
+        riskProfile: 'LOW',
+        joinDate: '2022-11-20',
+        lastLogin: new Date().toISOString(),
+        device: {
+            fingerprint: 'FP-F6G7H8I9J0',
+            type: 'Mobile',
+            os: 'iOS 18',
+            browser: 'Safari 18'
+        },
+        ip: '49.36.128.77',
+        location: { city: 'Bengaluru', state: 'Karnataka', country: 'IN', lat: 12.971, lng: 77.594 },
+        failedAttempts: 1,
+        recentTransactions: 8
+    },
+    'USR-003': {
+        id: 'USR-003',
+        name: 'Vikram Reddy',
+        email: 'vikram.r@email.com',
+        phone: '+91-76543-21098',
+        authenticated: true,
+        accountStatus: 'ACTIVE',
+        kycVerified: false, // KYC pending — will trigger compliance flags
+        walletBalance: 500,
+        bankBalance: 35000,
+        creditLimit: 0,
+        creditUsed: 0,
+        dailyLimit: 50000,
+        dailySpent: 48000,
+        monthlyLimit: 200000,
+        monthlySpent: 195000,
+        riskProfile: 'MEDIUM',
+        joinDate: '2025-01-10',
+        lastLogin: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
+        device: {
+            fingerprint: 'FP-K1L2M3N4O5',
+            type: 'Desktop',
+            os: 'Windows 11',
+            browser: 'Edge 120'
+        },
+        ip: '185.220.101.42', // TOR exit node IP (suspicious)
+        location: { city: 'Hyderabad', state: 'Telangana', country: 'IN', lat: 17.385, lng: 78.486 },
+        failedAttempts: 4,
+        recentTransactions: 35 // High velocity
+    },
+    'USR-004': {
+        id: 'USR-004',
+        name: 'Sneha Gupta',
+        email: 'sneha.g@email.com',
+        phone: '+91-65432-10987',
+        authenticated: false, // Not authenticated — will trigger validation failure
+        accountStatus: 'SUSPENDED',
+        kycVerified: true,
+        walletBalance: 0,
+        bankBalance: 0,
+        creditLimit: 75000,
+        creditUsed: 75000,
+        dailyLimit: 200000,
+        dailySpent: 0,
+        monthlyLimit: 1000000,
+        monthlySpent: 0,
+        riskProfile: 'HIGH',
+        joinDate: '2021-06-30',
+        lastLogin: new Date(Date.now() - 86400000 * 90).toISOString(), // 90 days ago
+        device: {
+            fingerprint: 'FP-P6Q7R8S9T0',
+            type: 'Mobile',
+            os: 'Android 12',
+            browser: 'Opera Mini'
+        },
+        ip: '91.134.203.55',
+        location: { city: 'Lagos', state: 'Lagos', country: 'NG', lat: 6.524, lng: 3.379 }, // Different country = suspicious
+        failedAttempts: 12,
+        recentTransactions: 0
+    },
+    'USR-005': {
+        id: 'USR-005',
+        name: 'Rohan Mehta',
+        email: 'rohan.mehta@email.com',
+        phone: '+91-54321-09876',
+        authenticated: true,
+        accountStatus: 'ACTIVE',
+        kycVerified: true,
+        walletBalance: 125000,
+        bankBalance: 980000,
+        creditLimit: 500000,
+        creditUsed: 50000,
+        dailyLimit: 500000,
+        dailySpent: 25000,
+        monthlyLimit: 5000000,
+        monthlySpent: 450000,
+        riskProfile: 'LOW',
+        joinDate: '2020-08-12',
+        lastLogin: new Date().toISOString(),
+        device: {
+            fingerprint: 'FP-U1V2W3X4Y5',
+            type: 'Mobile',
+            os: 'iOS 18',
+            browser: 'Safari 18'
+        },
+        ip: '157.49.226.113',
+        location: { city: 'New Delhi', state: 'Delhi', country: 'IN', lat: 28.613, lng: 77.209 },
+        failedAttempts: 0,
+        recentTransactions: 5
+    },
+    'USR-006': {
+        id: 'USR-006',
+        name: 'Ananya Iyer',
+        email: 'ananya.iyer@email.com',
+        phone: '+91-43210-98765',
+        authenticated: true,
+        accountStatus: 'ACTIVE',
+        kycVerified: true,
+        walletBalance: 2200,
+        bankBalance: 18000,
+        creditLimit: 30000,
+        creditUsed: 28000,
+        dailyLimit: 100000,
+        dailySpent: 0,
+        monthlyLimit: 500000,
+        monthlySpent: 10000,
+        riskProfile: 'LOW',
+        joinDate: '2024-02-28',
+        lastLogin: new Date().toISOString(),
+        device: {
+            fingerprint: 'FP-Z6A7B8C9D0',
+            type: 'Mobile',
+            os: 'Android 15',
+            browser: 'Chrome Mobile 121'
+        },
+        ip: '122.177.155.40',
+        location: { city: 'Chennai', state: 'Tamil Nadu', country: 'IN', lat: 13.082, lng: 80.270 },
+        failedAttempts: 0,
+        recentTransactions: 3
+    }
+};
+
+/**
+ * Mock Merchants.
+ */
+export const MERCHANTS = {
+    'MER-001': {
+        id: 'MER-001',
+        name: 'Amazon India',
+        category: 'E_COMMERCE',
+        riskLevel: 'LOW',
+        verified: true,
+        country: 'IN'
+    },
+    'MER-002': {
+        id: 'MER-002',
+        name: 'Netflix India',
+        category: 'SUBSCRIPTION',
+        riskLevel: 'LOW',
+        verified: true,
+        country: 'IN'
+    },
+    'MER-003': {
+        id: 'MER-003',
+        name: 'BigBazaar',
+        category: 'RETAIL',
+        riskLevel: 'LOW',
+        verified: true,
+        country: 'IN'
+    },
+    'MER-004': {
+        id: 'MER-004',
+        name: 'CryptoXchange',
+        category: 'CRYPTOCURRENCY',
+        riskLevel: 'HIGH',
+        verified: false,
+        country: 'MT'
+    },
+    'MER-005': {
+        id: 'MER-005',
+        name: 'LuckyStar Casino',
+        category: 'GAMBLING',
+        riskLevel: 'HIGH',
+        verified: false,
+        country: 'CW'
+    },
+    'MER-006': {
+        id: 'MER-006',
+        name: 'Zomato',
+        category: 'FOOD_DELIVERY',
+        riskLevel: 'LOW',
+        verified: true,
+        country: 'IN'
+    },
+    'MER-007': {
+        id: 'MER-007',
+        name: 'Unknown Overseas Ltd.',
+        category: 'UNKNOWN',
+        riskLevel: 'CRITICAL',
+        verified: false,
+        country: 'XX'
+    }
+};
+
+/**
+ * Suspicious IP ranges (simplified check).
+ */
+export const SUSPICIOUS_IPS = [
+    '185.220.', // TOR exit nodes
+    '91.134.',  // Known VPN
+    '45.33.',   // Data center
+    '192.99.',  // Hosting provider
+];
+
+/**
+ * High-risk merchant categories.
+ */
+export const HIGH_RISK_CATEGORIES = [
+    'CRYPTOCURRENCY', 'GAMBLING', 'ADULT', 'FIREARMS',
+    'UNKNOWN', 'MONEY_TRANSFER', 'PRECIOUS_METALS'
+];
+
+/**
+ * Pre-built transaction scenarios for quick testing.
+ */
+export const SCENARIOS = [
+    {
+        name: '✅ Normal UPI Payment',
+        description: 'Aarav sends ₹2,500 to Priya via UPI — clean, low-risk',
+        data: {
+            userId: 'USR-001',
+            recipientId: 'USR-002',
+            amount: 2500,
+            currency: 'INR',
+            paymentMethod: 'UPI'
+        }
+    },
+    {
+        name: '⚠️ Near-Limit Transfer',
+        description: 'Vikram sends ₹1,800 via wallet — near daily limit, KYC pending',
+        data: {
+            userId: 'USR-003',
+            recipientId: 'USR-001',
+            amount: 1800,
+            currency: 'INR',
+            paymentMethod: 'WALLET_TRANSFER'
+        }
+    },
+    {
+        name: '🔴 Suspicious Large Transfer',
+        description: 'Vikram sends ₹49,000 to unknown merchant — high velocity, TOR IP',
+        data: {
+            userId: 'USR-003',
+            recipientId: 'MER-004',
+            amount: 49000,
+            currency: 'INR',
+            paymentMethod: 'BANK_TRANSFER'
+        }
+    },
+    {
+        name: '🚫 Blocked Account Payment',
+        description: 'Sneha (suspended) tries ₹10,000 from foreign IP — will be blocked',
+        data: {
+            userId: 'USR-004',
+            recipientId: 'USR-001',
+            amount: 10000,
+            currency: 'INR',
+            paymentMethod: 'CREDIT_CARD'
+        }
+    },
+    {
+        name: '💳 Premium Card Payment',
+        description: 'Rohan pays ₹15,000 to Amazon via credit card — trusted user',
+        data: {
+            userId: 'USR-005',
+            recipientId: 'MER-001',
+            amount: 15000,
+            currency: 'INR',
+            paymentMethod: 'CREDIT_CARD'
+        }
+    },
+    {
+        name: '🎰 Gambling Merchant',
+        description: 'Ananya sends ₹5,000 to LuckyStar Casino — high-risk merchant',
+        data: {
+            userId: 'USR-006',
+            recipientId: 'MER-005',
+            amount: 5000,
+            currency: 'INR',
+            paymentMethod: 'DEBIT_CARD'
+        }
+    },
+    {
+        name: '📺 Subscription Payment',
+        description: 'Priya pays ₹649 Netflix subscription — routine, low-risk',
+        data: {
+            userId: 'USR-002',
+            recipientId: 'MER-002',
+            amount: 649,
+            currency: 'INR',
+            paymentMethod: 'SUBSCRIPTION_PAYMENT'
+        }
+    }
+];
